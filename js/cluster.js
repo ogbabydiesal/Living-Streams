@@ -1,15 +1,7 @@
-//time of day
-let today = new Date();
-let time = today.getHours()
-let cycleSeed = 0;
-let cycle = 0;
 //initiate some things
 var isPlaying = false;
-let flag = false;
-let flagTwo = false;
 let ranSample = 0;
 let counter = 0;
-let playHead = 0;
 
 const vol = new Tone.Volume(-12).toDestination();
 const reverb = new Tone.Reverb({decay: 9, wet: .7}).connect(vol);
@@ -137,7 +129,7 @@ function increment(evt) {
       catch(error){}
     }
     
-    if (counter > 100 && counter < 200) {
+    if (counter > 100 && counter < 280) {
       if (Math.floor(counter) % 2 == 0 && Math.random() > Math.random()*.2) {
         try{
           player4.buffer = samples.get(getRandomInt(20) + 26);
@@ -154,7 +146,7 @@ function increment(evt) {
     
   }
 }
-  setTimeout(increment, (Math.random() * 60 + 170));
+  setTimeout(increment, (Math.random() * 60 + 70));
 }
 
 function init() {
