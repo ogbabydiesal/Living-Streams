@@ -12,6 +12,7 @@ mainPlayer = new Tone.Player().connect(reverb);
 player = new Tone.Player().connect(fDel);
 player2 = new Tone.Player().connect(fDel);
 player4 = new Tone.Player().connect(fDel2);
+
 const silentPlayer = new Tone.Player("./sounds/silence.m4a");
 const samples = new Tone.ToneAudioBuffers({
   0 : "sounds/root/sample_0.mp3",
