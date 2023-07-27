@@ -1,19 +1,9 @@
 //initiate some things
-var isPlaying = false;
-let ranSample = 0;
-let counter = 0;
-
 const vol = new Tone.Volume(-12).toDestination();
-const reverb = new Tone.Reverb({decay: 9, wet: .7}).connect(vol);
-const fDel = new Tone.FeedbackDelay(".143", 0.6).connect(reverb);
-const fDel2 = new Tone.FeedbackDelay(".6", 0.5).connect(reverb);
-
-mainPlayer = new Tone.Player().connect(reverb);
-player = new Tone.Player().connect(fDel);
-player2 = new Tone.Player().connect(fDel);
-player4 = new Tone.Player().connect(fDel2);
-
-const silentPlayer = new Tone.Player("./sounds/silence.m4a");
+const reverb = new Tone.Reverb({decay: 9, wet: .6}).connect(vol);
+const fDel = new Tone.FeedbackDelay(.125, 0.4).connect(reverb);
+const fDel2 = new Tone.FeedbackDelay(.25, 0.4).connect(reverb);
+const filty = new Tone.AutoFilter(.06125, 400, 3).connect(fDel2);
 const samples = new Tone.ToneAudioBuffers({
   0 : "sounds/root/sample_0.mp3",
   1 : "sounds/gtr/cluster_1/sample_1.mp3",
@@ -63,90 +53,114 @@ const samples = new Tone.ToneAudioBuffers({
   45 : "sounds/gtr/cluster_2/sample_19.mp3",
 	46 : "sounds/gtr/cluster_2/sample_20.mp3",
 	47 : "sounds/gtr/cluster_2/sample_0.mp3",
-	
 }, () => {
+  rootPlayers = [];
+  melodyPlayers = [];
+  leadPlayers = [];
+  panners = [];
+  leadPanners = [];
+  for (let x = 0; x < 12; x++) {
+    panners.push(new Tone.AutoPanner(2).connect(fDel).start());
+    leadPanners.push(new Tone.AutoPanner(.25).connect(filty).start());
+    panners[x].type = "square";
+    panners[x].wet.value = .5;
+    leadPanners[x].type = "square";
+    leadPanners[x].wet.value = .7;
+    rootPlayers.push(new Tone.Player().connect(reverb));
+    rootPlayers[x].buffer = samples.get("0");
+    melodyPlayers.push(new Tone.Player().connect(panners[x]));
+    leadPlayers.push(new Tone.Player().connect(leadPanners[x]));
+  }
   document.querySelector(".button").innerHTML = "play";
-  
-  silentPlayer.connect(reverb);
-  silentPlayer.loop = true;
-  silentPlayer.start();
-
 });
-
+var isPlaying = false;
+let ranSample = 0;
+let counter = 0;
+const silentPlayer = new Tone.Player("./sounds/silence.m4a");
+silentPlayer.connect(reverb);
+silentPlayer.loop = true;
+rootPlayerCount = 0; //root voice allocator
+melodyPlayerCount = 0; //melody voice allocator
+leadPlayerCount = 0; //lead voice allocator
 function getRandomInt(max) {
   return Math.floor(Math.random() * max) + 1;
 }
-
-let x = 0;
+//canvas to create player
+let x = 0; //keep track of playhead drawing
 let isDrawing = false;
-function increment(evt) {
-  let canvas = document.querySelector("canvas");
-  let ctx = canvas.getContext("2d");
-  canvas.addEventListener('mousedown', e => {
+let canvas = document.querySelector("canvas");
+let ctx = canvas.getContext("2d");
+canvas.addEventListener('mousedown', e => {
+  x = e.offsetX;
+  counter = x;
+  isDrawing = true;
+});
+canvas.addEventListener('mousemove', e => {
+  if (isDrawing === true) {
     x = e.offsetX;
     counter = x;
-    isDrawing = true;
+  }
+  canvas.addEventListener('mouseup', e => {
+    isDrawing = false;
   });
-  canvas.addEventListener('mousemove', e => {
-    if (isDrawing === true) {
-      x = e.offsetX;
-      counter = x;
-    }
-    canvas.addEventListener('mouseup', e => {
-      isDrawing = false;
-    });
-  });
-  ctx.fillStyle = "black";
+});
+ctx.fillStyle = "black";
+function increment(evt) {
   if(isPlaying) {
     counter = counter + .14;
-    
-    if (window.innerWidth > 600) {
-      canvas.width = 290;
-      canvas.height = 28;
-    }
-    else {
-      canvas.width = 100;
-    }
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     ctx.fillRect(counter, 0, 1, canvas.height)
-    //the low d
+    //the low d ;P
     if (counter > 6) { 
-    if (Math.floor(counter) % 4 == 0 && Math.random() > Math.random()*.8) {
-        mainPlayer.start();    
-    }
-    if (Math.floor(counter) % 5 == 0 && Math.random() > Math.random()*.8) {
-      try{
-        player2.buffer = samples.get(getRandomInt(25));
-        player2.start();
-      }
-      catch(error){}  
-        
-    }
-    if (Math.floor(counter) % 7 == 0 && Math.random() > Math.random()*.2) {
-      try{
-        player.buffer = samples.get(getRandomInt(25));
-        player.start();
-      }
-      catch(error){}
-    }
-    
-    if (counter > 100 && counter < 280) {
-      if (Math.floor(counter) % 2 == 0 && Math.random() > Math.random()*.2) {
-        try{
-          player4.buffer = samples.get(getRandomInt(20) + 26);
-          player4.start();
+      if (Math.floor(counter) % 4 == 0 && Math.random() > Math.random()*.8) {
+        rootPlayerCount++;
+        if (rootPlayerCount >= rootPlayers.length) {
+          rootPlayerCount = 0;
         }
-        catch(error){}
+        rootPlayers[rootPlayerCount].start();    
+      }
+      if (Math.floor(counter) % 5 == 0 && Math.random() > Math.random()*.8) {
+        melodyPlayerCount++;
+        try{ //wrapping this in a try block because sometimes the buffer isn't loaded before a play event
+          if (melodyPlayerCount >= melodyPlayers.length) {
+            melodyPlayerCount = 0;
+          }
+          melodyPlayers[melodyPlayerCount].buffer = samples.get(getRandomInt(25));
+          melodyPlayers[melodyPlayerCount].volume.value = -4;
+          melodyPlayers[melodyPlayerCount].start();
+        } catch(error){}    
+      }
+      if (Math.floor(counter) % 7 == 0 && Math.random() > Math.random()*.2) {
+        melodyPlayerCount++;
+        if (melodyPlayerCount >= melodyPlayers.length) {
+          melodyPlayerCount = 0;
+        }
+        try{
+          melodyPlayers[melodyPlayerCount].buffer = samples.get(getRandomInt(25));
+          melodyPlayers[melodyPlayerCount].volume.value = -4;
+          melodyPlayers[melodyPlayerCount].start();
+        } catch(error){} 
+      }
+      if (counter > 100 && counter < 280) {
+        if (Math.floor(counter) % 2 == 0 && Math.random() > Math.random()*.3 || Math.floor(counter) % 3 == 0 && Math.random() > Math.random()*.3) {
+          leadPlayerCount++;
+          if (leadPlayerCount >= leadPlayers.length) {
+            leadPlayerCount = 0;
+          }
+          try{
+            leadPlayers[leadPlayerCount].buffer = samples.get(getRandomInt(20) + 26);
+            leadPlayers[leadPlayerCount].volume.value = -8;
+            leadPlayers[leadPlayerCount].start();
+          } catch(error){}
+        }
+      }
+      if (counter >= 290) {
+        Tone.Transport.stop();
+        document.querySelector(".button").innerHTML = "play";
+        isPlaying = false;
       }
     }
-    if (counter >= 290) {
-      Tone.Transport.stop();
-      document.querySelector(".button").innerHTML = "play";
-      isPlaying = false;
-    }
-    
   }
-}
   setTimeout(increment, (Math.random() * 60 + 70));
 }
 
@@ -159,10 +173,9 @@ function init() {
     document.querySelector(".button").innerHTML = "pause";
     Tone.start();
     Tone.Transport.start();
-    const timer = setTimeout(increment, 100);
-    mainPlayer.buffer = samples.get("0");
-    player.buffer = samples.get("2");
-    player2.buffer = samples.get("5");
+    filty.start();
+    silentPlayer.start();
+    increment();
   }
   else {
     Tone.Transport.pause();
@@ -170,3 +183,14 @@ function init() {
     isPlaying = false;
   }
 }
+function adjustCanvas() {
+  if (window.innerWidth > 600) {
+    canvas.width = 290;
+    canvas.height = 28;
+  }
+  else {
+    canvas.width = 100;
+  }
+}
+
+window.onresize = adjustCanvas;
