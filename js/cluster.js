@@ -90,7 +90,6 @@ let x = 0; //keep track of playhead drawing
 let isDrawing = false;
 let canvas = document.querySelector("canvas");
 let ctx = canvas.getContext("2d");
-ctx.scale(2, 2);
 canvas.addEventListener('mousedown', e => {
   x = e.offsetX;
   counter = x;
