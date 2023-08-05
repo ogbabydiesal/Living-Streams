@@ -85,11 +85,12 @@ leadPlayerCount = 0; //lead voice allocator
 function getRandomInt(max) {
   return Math.floor(Math.random() * max) + 1;
 }
-//canvas to create player
+//canvas to create music player
 let x = 0; //keep track of playhead drawing
 let isDrawing = false;
 let canvas = document.querySelector("canvas");
 let ctx = canvas.getContext("2d");
+ctx.scale(2, 2);
 canvas.addEventListener('mousedown', e => {
   x = e.offsetX;
   counter = x;
@@ -105,6 +106,7 @@ canvas.addEventListener('mousemove', e => {
   });
 });
 ctx.fillStyle = "black";
+
 function increment(evt) {
   if(isPlaying) {
     counter = counter + .14;
@@ -158,24 +160,23 @@ function increment(evt) {
         Tone.Transport.stop();
         document.querySelector(".button").innerHTML = "play";
         isPlaying = false;
+        counter = 0;
       }
     }
   }
   setTimeout(increment, (Math.random() * 60 + 70));
 }
 
+increment();
+
 function init() {
   if (!isPlaying) {
-    if (counter >= 290) {
-      counter = 0;
-    }
     isPlaying = true;
     document.querySelector(".button").innerHTML = "pause";
     Tone.start();
     Tone.Transport.start();
     filty.start();
     silentPlayer.start();
-    increment();
   }
   else {
     Tone.Transport.pause();
