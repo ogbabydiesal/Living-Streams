@@ -185,11 +185,11 @@ function init() {
 }
 function adjustCanvas() {
   if (window.innerWidth > 600) {
-    canvas.width = 290;
-    canvas.height = 28;
+    //canvas.width = 290;
+    //canvas.height = 28;
   }
   else {
-    canvas.width = 100;
+    //canvas.width = 100;
   }
 }
 
