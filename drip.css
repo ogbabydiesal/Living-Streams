@@ -21,20 +21,26 @@ html, body{
 .button {
   position:absolute;
   font-family:serif;
-  border-style:thin;
+  border-style:solid;
   border-width: 1px;
-  border-radius: 15px;
+  border-radius: 35px;
+  border-color:black;
+  color:black;
+  background-color: transparent;
   box-shadow: 3px 3px 3px black;
   width: 75px;
+  height:30px;
   padding: 5px 15px;
   font-style: italic;
   font-style:lighter;
   margin-left: 10px;
   bottom:10px;
 }
+
 canvas {
   width: 290px;
   height: 28px;
+  box-shadow: 3px 3px 3px black;
 }
 img {
   border-radius: 15px;
@@ -59,14 +65,14 @@ img {
   bottom:10px;
   right: 10px;
   border-radius:15px;
-  box-shadow: 3px 3px 3px black;
+  
+  
 }
 
 p {
   color:black;
   line-height: normal;
   font-family:times;
-  
   font-size: 15px;
   margin:0px;
 }
