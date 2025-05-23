@@ -1,7 +1,10 @@
 html, body{
-  overflow: hidden;
+  overflow: none;
   margin: 0;
   padding:0;
+  font-family: cursive;
+  font-style: oblique;
+  background-color: #fdfdfd;
 }
 
 .main {
@@ -14,7 +17,7 @@ html, body{
   border-color:black;
   position:relative;
   border-radius:15px;
-  box-shadow: 10px 5px 5px black;
+  box-shadow: 10px 5px 5px grey;
   margin-bottom: 15px;
 }
 
@@ -27,11 +30,11 @@ html, body{
   border-color:black;
   color:black;
   background-color: transparent;
-  box-shadow: 3px 3px 3px black;
+  box-shadow: 3px 3px 3px grey;
   width: 75px;
   height:30px;
   padding: 5px 15px;
-  font-style: italic;
+  
   font-style:lighter;
   margin-left: 10px;
   bottom:10px;
@@ -40,14 +43,14 @@ html, body{
 canvas {
   width: 290px;
   height: 28px;
-  box-shadow: 3px 3px 3px black;
+  box-shadow: 3px 3px 3px grey;
 }
 img {
   border-radius: 15px;
   width:380px;
   height:380px;
   object-fit: cover;
-  box-shadow: 3px 3px 3px black;
+  box-shadow: 3px 3px 3px grey;
 }
 
 .poster {
@@ -65,14 +68,11 @@ img {
   bottom:10px;
   right: 10px;
   border-radius:15px;
-  
-  
 }
 
 p {
   color:black;
   line-height: normal;
-  font-family:times;
   font-size: 15px;
   margin:0px;
 }
@@ -84,12 +84,3 @@ p {
   position:relative;
 }
 
-.cluster {
-  text-shadow: 1px 1px 1px grey;
-  margin: auto;
-  width: 400px;
-  text-align: center;
-  position:relative;
-  top: 19vh;
-  font-style:italic;
-}

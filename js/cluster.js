@@ -1,3 +1,9 @@
+console.log("living streams is a generative musical work, no two playthroughs are the same. \n\n")
+//U+2056
+const threeDotsUnicode = "&#x2056;";
+//general punction U+205B
+const fourDotsUnicode = "&#x205B;";
+const playUnicode = "&#9658;";
 //initiate some things
 const vol = new Tone.Volume(-12).toDestination();
 const reverb = new Tone.Reverb({decay: 9, wet: .6}).connect(vol);
@@ -71,7 +77,7 @@ const samples = new Tone.ToneAudioBuffers({
     melodyPlayers.push(new Tone.Player().connect(panners[x]));
     leadPlayers.push(new Tone.Player().connect(leadPanners[x]));
   }
-  document.querySelector(".button").innerHTML = "play";
+  document.querySelector(".button").innerHTML = threeDotsUnicode;
 });
 var isPlaying = false;
 let ranSample = 0;
@@ -110,7 +116,7 @@ function increment(evt) {
   if(isPlaying) {
     counter = counter + .14;
     ctx.clearRect(0, 0, canvas.width, canvas.height)
-    ctx.fillRect(counter, 0, 1, canvas.height)
+    ctx.fillRect(counter.toFixed(1), 0, 1, canvas.height)
     //the low d ;P
     if (counter > 6) { 
       if (Math.floor(counter) % 4 == 0 && Math.random() > Math.random()*.8) {
@@ -171,7 +177,7 @@ increment();
 function init() {
   if (!isPlaying) {
     isPlaying = true;
-    document.querySelector(".button").innerHTML = "pause";
+    document.querySelector(".button").innerHTML = fourDotsUnicode;
     Tone.start();
     Tone.Transport.start();
     filty.start();
@@ -179,7 +185,7 @@ function init() {
   }
   else {
     Tone.Transport.pause();
-    document.querySelector(".button").innerHTML = "play";
+    document.querySelector(".button").innerHTML = threeDotsUnicode;
     isPlaying = false;
   }
 }
